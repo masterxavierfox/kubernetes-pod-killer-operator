@@ -1,0 +1,123 @@
+# Default values for butcherctl.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+fargate:
+  type: "fargate"
+  
+replicaCount: 1
+
+image:
+  repository: IMG_TAG
+  tag: ""
+  pullPolicy: Always
+  pullSecrets:
+    - nexdock
+
+nameOverride: ""
+fullnameOverride: ""
+
+clusterRoles:
+  create: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "butcherctl"
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+ enabled: SVC_STATUS
+ type: SVC_TYPE
+ port: SVC_PORT
+ hostname: SVC_HOST
+ environment: SVC_ENV
+  # enabled: false
+  # type: ClusterIp
+  # port: 8080
+  # hostname: butcherctlapp.dev.tingg.africa
+  # environment: development
+  
+# Read more about this at the link below:
+# https://www.getambassador.io/docs/latest/topics/using/timeouts/
+ambassador:
+  timeoutMs: 5000
+  connectTimeoutms: 5000
+  idleTimeoutms: 5000
+
+## The following settings are to configure the frequency of the liveness and readiness probes
+livenessProbe:
+  initialDelaySeconds: 180
+  periodSeconds: 60
+
+readinessProbe:
+  initialDelaySeconds: 180
+  periodSeconds: 60  
+
+ingress:
+  enabled: INGRESS_ALB
+  #enabled: false
+  annotations: 
+    kubernetes.io/ingress.class: alb
+    # alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": SVC_PORT }]'
+    # alb.ingress.kubernetes.io/inbound-cidrs: 10.101.0.0/16
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+    alb.ingress.kubernetes.io/success-codes: '200'
+    # alb.ingress.kubernetes.io/security-groups:
+    # alb.ingress.kubernetes.io/subnets: subnet-xxxx, mySubnet
+
+  hosts:
+    - host: ['*']
+      paths: ['/*']
+  tls: []
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 800Mi
+  requests:
+    cpu: 150m
+    memory: 250Mi
+
+# "0 22 * * *" @ 10 pm every day
+# "1 * * * *" @ every minute
+# "0 */6 * * * " every 6 hours
+cronjobservice:
+  enabled: true
+  cron: "0 */6 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# A map of additional environment variables
+extraVars:
+   REDIS_URI: "butcherctl-redisbutcher-headless:6379"
+   REDIS_PASS: ""
+   REDIS_DB: ""
+   SLACK_WEBHOOK: "https://hooks.slack.com/services/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"
+
+redis:
+  nameOverride: "redisbutcher"
+  architecture: "standalone"
+  auth:
+    enabled: false
+    sentinel: false
+  replica:
+    replicaCount: 1

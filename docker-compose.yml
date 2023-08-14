@@ -1,0 +1,15 @@
+volumes:
+  data:
+
+services:
+  redis:
+    image: redis:latest
+    volumes:
+      - data:/data
+    ports:
+      - 6379:6379
+  thebutcher:
+    build: .
+#    volumes:
+#      - .:/data
+#    image: [YOUR-APP-IMAGE]

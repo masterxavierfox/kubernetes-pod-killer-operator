@@ -1,0 +1,65 @@
+{{- if .Values.service.enabled -}}
+{{ if eq .Release.Namespace "development" }}
+---
+apiVersion: getambassador.io/v2
+kind:  Mapping
+metadata:
+  name: "{{ .Chart.Name }}-{{ .Release.Namespace }}"
+spec:
+  prefix: /
+  service: "{{ .Chart.Name }}.{{ .Release.Namespace }}:{{ .Values.service.port }}"
+  host: "{{ .Values.service.hostname }}"
+  timeout_ms: {{ .Values.ambassador.timeoutMs }} 
+  connect_timeout_ms: {{ .Values.ambassador.connectTimeoutms }}
+  idle_timeout_ms: {{ .Values.ambassador.idleTimeoutms }}
+
+{{ end }}
+
+{{ if eq .Release.Namespace "testing" }}
+---
+apiVersion: getambassador.io/v2
+kind:  Mapping
+metadata:
+  name: "{{ .Chart.Name }}-{{ .Release.Namespace }}"
+spec:
+  prefix: /
+  service: "{{ .Chart.Name }}.{{ .Release.Namespace }}:{{ .Values.service.port }}"
+  host: "{{ .Values.service.hostname }}"
+  timeout_ms: {{ .Values.ambassador.timeoutMs }} 
+  connect_timeout_ms: {{ .Values.ambassador.connectTimeoutms }}
+  idle_timeout_ms: {{ .Values.ambassador.idleTimeoutms }}
+
+{{ end }}
+
+{{ if eq .Release.Namespace "approval" }}
+---
+apiVersion: getambassador.io/v2
+kind:  Mapping
+metadata:
+  name: "{{ .Chart.Name }}-{{ .Release.Namespace }}"
+spec:
+  prefix: /
+  service: "{{ .Chart.Name }}.{{ .Release.Namespace }}:{{ .Values.service.port }}"
+  host: "{{ .Values.service.hostname }}"
+  timeout_ms: {{ .Values.ambassador.timeoutMs }} 
+  connect_timeout_ms: {{ .Values.ambassador.connectTimeoutms }}
+  idle_timeout_ms: {{ .Values.ambassador.idleTimeoutms }}
+
+{{ end }}
+
+{{ if eq .Release.Namespace "production" }}
+---
+apiVersion: getambassador.io/v2
+kind:  Mapping
+metadata:
+  name: "{{ .Chart.Name }}-{{ .Release.Namespace }}"
+spec:
+  prefix: /
+  service: "{{ .Chart.Name }}.{{ .Release.Namespace }}:{{ .Values.service.port }}"
+  host: "{{ .Values.service.hostname }}"
+  timeout_ms: {{ .Values.ambassador.timeoutMs }} 
+  connect_timeout_ms: {{ .Values.ambassador.connectTimeoutms }}
+  idle_timeout_ms: {{ .Values.ambassador.idleTimeoutms }}
+
+{{ end }}
+{{- end }}

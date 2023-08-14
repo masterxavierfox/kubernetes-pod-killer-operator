@@ -1,0 +1,48 @@
+{{if eq .Values.cronjobservice.enabled true}}
+  {{- if semverCompare ">=1.21-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: batch/v1
+  {{- else -}}
+apiVersion: batch/v1beta1
+  {{- end }}
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "butcherctl.labels" . | nindent 4 }}
+    app: {{ .Chart.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    infrastructure: {{ .Values.fargate.type }}
+spec:
+  schedule: "{{ .Values.cronjobservice.cron }}"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.cronjobservice.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobservice.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ .Chart.Name }}
+            release: {{ .Release.Name }}
+        spec:
+          serviceAccountName: {{ include "butcherctl.serviceAccountName" . }}
+          serviceAccount: {{ include "butcherctl.serviceAccountName" . }}
+          restartPolicy: Never
+          containers:
+            - name: {{ .Chart.Name }}
+              image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+              env:
+              {{- range $key, $value := .Values.extraVars }}
+                - name: {{ $key }}
+                  value: {{ $value }}
+              {{- end }}
+              resources:
+                limits:
+                  cpu: "{{ .Values.resources.limits.cpu }}"
+                  memory: "{{ .Values.resources.limits.memory }}"
+                requests:
+                  cpu: "{{ .Values.resources.limits.cpu }}"
+                  memory: "{{ .Values.resources.limits.memory }}"
+  {{ end }}
