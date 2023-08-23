@@ -111,7 +111,7 @@ extraVars:
    REDIS_URI: "butcherctl-redisbutcher-headless:6379"
    REDIS_PASS: ""
    REDIS_DB: ""
-   SLACK_WEBHOOK: "https://hooks.slack.com/services/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"
+   SLACK_WEBHOOK: ""
 
 redis:
   nameOverride: "redisbutcher"
