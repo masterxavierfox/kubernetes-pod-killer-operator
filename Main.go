@@ -152,7 +152,7 @@ type SlackRequestBody struct {
 var (
 	k8context  = ""
 	ctx        = context.Background()
-	webhookUrl = getEnv("SLACK_WEBHOOK", "https://hooks.slack.com/services/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")
+	webhookUrl = getEnv("SLACK_WEBHOOK", "https://hooks.slack.com/services")
 )
 
 // MakerCheckerId : stores maker checker id
